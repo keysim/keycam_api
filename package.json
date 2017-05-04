@@ -23,5 +23,14 @@
   "bugs": {
     "url": "https://github.com/keysim/keycam_api/issues"
   },
-  "homepage": "https://github.com/keysim/keycam_api#readme"
+  "homepage": "https://github.com/keysim/keycam_api#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "jsonwebtoken": "^7.4.0",
+    "mongodb": "^2.2.26",
+    "mongoose": "^4.9.7",
+    "morgan": "^1.8.1",
+    "socket.io": "^1.7.3"
+  }
 }
