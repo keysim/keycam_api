@@ -1,0 +1,27 @@
+{
+  "name": "keycam_api",
+  "version": "1.0.0",
+  "description": "KeyCam API",
+  "main": "server.js",
+  "scripts": {
+    "stop": "kill $(cat pid)",
+    "restart": "npm stop; npm start",
+    "start": "node server.js > out 2> err & echo $! > pid",
+    "test": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/keysim/keycam_api.git"
+  },
+  "keywords": [
+    "cam",
+    "babyphone",
+    "keysim"
+  ],
+  "author": "Keysim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/keysim/keycam_api/issues"
+  },
+  "homepage": "https://github.com/keysim/keycam_api#readme"
+}
