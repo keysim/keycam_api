@@ -9,10 +9,20 @@ var morgan      = require('morgan');
 var mongoose    = require('mongoose');
 var config		= require('./api/config');
 var routes		= require('./api/router');
-
+var Handler 	= require('./api/sockets.js');
+var http		= require('http').Server(app);
+var io			= require('socket.io')(http);
+var socketHandler = new Handler(io);
 // =================================================================
 // configuration ===================================================
 // =================================================================
+
+socketHandler.start();
+
+
+http.listen(config.socket_port, function(){
+	console.log('Sockets listen on port 4444');
+});
 
 mongoose.connect(config.db.url, function(err) {
 	if(!err)
@@ -39,7 +49,7 @@ app.options("/*", function(req, res, next){
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-	res.send(200);
+	res.sendStatus(200);
 });
 
 app.use('/api', routes);

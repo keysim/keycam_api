@@ -45,7 +45,7 @@ module.exports = {
 				return console.error(err);
 			}
 			if (!user) {
-				res.status(400).json({ success: false, message: 'User not found.' });
+				res.status(404).json({ success: false, message: 'User not found.' });
 			} else if (user) {
 				if (user.password != req.body.password) {
 					res.status(400).json({ success: false, message: 'Wrong password.' });
@@ -69,19 +69,19 @@ module.exports = {
 	tokenMiddleware : function(req, res, next) {
 		var token = (req.body && req.body.token) || req.params['token'] || (req.query && req.query.token) || req.headers['x-access-token'];
 		if (!token)
-			return res.status(403).send({success: false, message: 'Wrong url or No token provided.'});
+			return res.status(403).json({success: false, message: 'Wrong url or No token provided.'});
 		try {
 			var decoded = jwt.decode(token, config.secret);
 			Collection.findOne({
 				email: decoded._doc.email
 			}, function(err, user) {
 				if(err || !user)
-					return res.status(403).send({ success: false, message: 'Db error or token invalid.' });
+					return res.status(403).json({ success: false, message: 'Db error or token invalid.' });
 				req.user = user;
 				return next();
 			});
 		} catch (err) {
-			return res.status(403).send({ success: false, message: 'Failed to authenticate token.' });
+			return res.status(403).json({ success: false, message: 'Failed to authenticate token.' });
 		}
 	},
 
