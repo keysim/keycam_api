@@ -4,20 +4,28 @@ var group       = require('./models/group');
 var team        = require('./models/team');
 var log         = require('./models/log');
 var OpenTok		= require('opentok');
-var sessionId     = null;
-let tokboxToken = 'db964962da51c507ef24dc9fb4ae4b3841df87c3';
-var opentok = new OpenTok('45839072', tokboxToken);
+var sessionId   = null;
+let tokboxTokenServ = 'db964962da51c507ef24dc9fb4ae4b3841df87c3';
+var tokboxToken = "";
+let key         = '45839072';
+var opentok = new OpenTok(key, tokboxTokenServ);
 
-opentok.createSession(function(err, session) {
-    if (err) return console.log(err);
-
-    // save the sessionId
-    sessionId = session.sessionId;
-    //db.save('session', session.sessionId, done);
+opentok.createSession({mediaMode:'routed', archiveMode:'always'}, function(err, session) {
+    if (err) {
+        console.log("Error creating session:", err)
+    } else {
+        sessionId = session.sessionId;
+        tokboxToken = opentok.generateToken(sessionId, {
+            role :       'moderator',
+            expireTime : (new Date().getTime() / 1000)+(7 * 24 * 60 * 60), // in one week
+            data :       'name=Johnny'
+        });
+        console.log("Session ID: " + sessionId);
+    }
 });
 
 function getSession(req, res) {
-    res.json({success:true, message: "Here the tokbox session and token", token:tokboxToken, id:sessionId});
+    res.json({success:true, message: "Here the tokbox session and token", token:tokboxToken, id:sessionId, key:key});
 }
 
 var routes = express.Router();

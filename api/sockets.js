@@ -42,11 +42,14 @@ class SocketHandler {
         });
     }
     start(){
-        var events = ['picture', 'text', 'switch', 'battery', 'playlist', 'player'];
+        var events = ['picture', 'text', 'switch', 'battery', 'playlist', 'player', 'light', 'mood', 'mode'];
         this.handshake();
         var io = this.io;
         io.on('connection', function(socket){
-            console.log(socket.type, socket.email, "connected");
+            if(socket.type == "parent")
+                console.log("++++ Parent", socket.email, "connected ++++");
+            else
+                console.log("++++ Baby", socket.email, "connected ++++");
             if (babySockets[socket.email] && io.sockets.connected[babySockets[socket.email]] && parentSockets[socket.email] && io.sockets.connected[parentSockets[socket.email]])
                 io.sockets.connected[parentSockets[socket.email]].emit('babyState', "on");
             else if(parentSockets[socket.email] && io.sockets.connected[parentSockets[socket.email]])
@@ -54,14 +57,14 @@ class SocketHandler {
             for (var event of events) {
                 socket.on(event, function (data) {
                     if (this.type == "parent") {
-                        console.log("I'm a parent and sent", data.type);
+                        console.log("-> Parent", this.email, "sent", data.type);
                         if (babySockets[this.email] && io.sockets.connected[babySockets[this.email]])
                             io.sockets.connected[babySockets[this.email]].emit(data.type, data.data);
                         else
-                            console.log("but baby is not connected");
+                            console.log("<- but baby is not connected");
                     }
                     else {
-                        console.log("I'm a baby sent", data.type);
+                        console.log("<- Baby", this.email, "sent", data.type);
                         if (parentSockets[this.email] && io.sockets.connected[parentSockets[this.email]])
                             io.sockets.connected[parentSockets[this.email]].emit(data.type, data.data);
                         else{
@@ -70,7 +73,7 @@ class SocketHandler {
                             newOne.save(function(err, logData) {
                                 if (err)
                                     return console.error(err);
-                                console.log("New log saved from babyphone", logData.baby)
+                                console.log("***New log saved from babyphone***", logData.baby)
                             });
                         }
                     }
@@ -85,13 +88,16 @@ class SocketHandler {
                         transporter.sendMail(mailOptions, (error, info) => {
                             if (error)
                                 return console.log(error);
-                            console.log('Message %s sent: %s', info.messageId, info.response);
+                            console.log('- Message %s sent: %s', info.messageId, info.response);
                         });
                     }
                     else
-                        console.log("Sorry but", this.email, "is not a email.")
+                        console.log("---- Sorry but", this.email, "is not a email ----")
                 }
-                console.log(this.type, this.email, "disconnect");
+                if(socket.type == "parent")
+                    console.log("++++ Parent", socket.email, "disconnect ++++");
+                else
+                    console.log("++++ Baby", socket.email, "disconnect ++++");
             });
         });
     }
